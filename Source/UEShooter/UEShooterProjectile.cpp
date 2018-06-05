@@ -2,6 +2,7 @@
 
 #include "UEShooterProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Components/SphereComponent.h"
 
 AUEShooterProjectile::AUEShooterProjectile() 
@@ -17,15 +18,26 @@ AUEShooterProjectile::AUEShooterProjectile()
 	CollisionComp->CanCharacterStepUpOn = ECB_No;
 
 	// Set as root component
-	RootComponent = CollisionComp;
+	//RootComponent = CollisionComp;
 
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
-	ProjectileMovement->InitialSpeed = 3000.f;
-	ProjectileMovement->MaxSpeed = 3000.f;
+	ProjectileMovement->InitialSpeed = 3600.f;
+	ProjectileMovement->MaxSpeed = 3600.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
+	// Hit particle effect
+	HitSkinParticles = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("HitSkinEffect"));
+	HitSkinParticles->AttachToComponent(CollisionComp, FAttachmentTransformRules::KeepRelativeTransform);
+	HitSkinParticles->bAutoActivate = false;
+
+	// Hit particle effect
+	HitParticles = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("HitEffect"));
+	HitParticles->AttachToComponent(CollisionComp, FAttachmentTransformRules::KeepRelativeTransform);
+	HitParticles->bAutoActivate = false;
+
+
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
@@ -36,8 +48,25 @@ void AUEShooterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
 	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
-		Destroy();
+		OtherComp->AddImpulseAtLocation(GetVelocity() * 50.0f, GetActorLocation());
+		
+		SetRootComponent(HitSkinParticles);
+		HitSkinParticles->Activate(true);
+		CollisionComp->DestroyComponent();
 	}
+	else if((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL))
+	{
+		SetRootComponent(HitParticles);
+		//HitParticles->RelativeLocation = OtherActor->GetActorLocation();
+		HitParticles->Activate(true);
+		CollisionComp->DestroyComponent();
+	}
+
+	FTimerHandle Timer;
+	GetWorld()->GetTimerManager().SetTimer(Timer, this, &AUEShooterProjectile::OnTimerExpire, DestroyDelay, false);
+}
+
+void AUEShooterProjectile::OnTimerExpire()
+{
+	Destroy();
 }
