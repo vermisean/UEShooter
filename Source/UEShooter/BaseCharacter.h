@@ -28,6 +28,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Condition")
 	bool IsAlive() const;
 
+	// Sprinting
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	virtual bool IsSprinting();
+
+	virtual void SetSprinting(bool NewSprinting);
+
+	float GetSprintSpeedModifier() const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,6 +42,18 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Condition")
 	float Health;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float SprintSpeedModifier;
+
+	bool bWantsToRun;
+
+	void SetTargeting(bool NewTargeting);
+
+	bool bIsTargeting;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	float TargetingSpeedModifier;
 
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
 
@@ -55,6 +74,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
+	UFUNCTION(BlueprintCallable, Category = "Targeting")
+	bool IsTargeting() const;
+
+	float GetTargetingSpeedModifier() const;
+
+	// Get pitch/yaw from current cam
+	UFUNCTION(BlueprintCallable, Category = "Targeting")
+	FRotator GetAimOffsets() const;
 	
 };
