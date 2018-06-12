@@ -12,6 +12,7 @@
 // 	Idle,
 // 	Firing,
 // 	Reloading
+// 	
 // };
 // 
 // UCLASS(ABSTRACT, Blueprintable)
