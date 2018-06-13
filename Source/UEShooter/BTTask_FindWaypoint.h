@@ -7,7 +7,7 @@
  #include "BTTask_FindWaypoint.generated.h"
  
  /**
-  * 
+  * Blackboard Task - Find next waypoint
   */
  UCLASS()
  class UESHOOTER_API UBTTask_FindWaypoint : public UBTTask_BlackboardBase

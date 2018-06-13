@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "AIWaypoint.h"
+#include "Types.h"
 #include "UEShooterCharacter.h"
 #include "MonsterAIController.generated.h"
 
@@ -25,6 +26,9 @@ class UESHOOTER_API AMonsterAIController : public AAIController
 	class UBehaviorTreeComponent* BehaviorComp;
 
 	class UBlackboardComponent* BBComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	FName TargetLocationKeyName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	FName TargetEnemyKeyName;
@@ -48,10 +52,12 @@ public:
 
 	void SetTargetEnemy(APawn* NewTarget);
 
-	//void SetBBMonsterType(EMonsterBehaviourType NewType);
+	void SetBBMonsterType(EMonsterBehaviorType NewType);
 
 	FORCEINLINE UBehaviorTreeComponent* GetBehaviorComp() const { return BehaviorComp; }
 
 	FORCEINLINE UBlackboardComponent* GetBBComp() const { return BBComp; }
+
+	void SetMoveToTarget(APawn* Pawn);
 	
 };

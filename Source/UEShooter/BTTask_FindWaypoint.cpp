@@ -15,6 +15,7 @@
  	AMonsterAIController* MyController = Cast<AMonsterAIController>(OwnerComp.GetAIOwner());
  	if (MyController == nullptr)
  	{
+		UE_LOG(LogTemp, Warning, TEXT("No AIController found"));
  		return EBTNodeResult::Failed;
  	}
  
@@ -27,6 +28,7 @@
  
  	if (AllWaypoints.Num() == 0)
  	{
+		UE_LOG(LogTemp, Warning, TEXT("No Waypoints found"));
  		return EBTNodeResult::Failed;
  	}
  
@@ -40,6 +42,7 @@
  		return EBTNodeResult::Succeeded;
  	}
  
+	UE_LOG(LogTemp, Warning, TEXT("Something went wrong"));
  	return EBTNodeResult::Failed;
  
  

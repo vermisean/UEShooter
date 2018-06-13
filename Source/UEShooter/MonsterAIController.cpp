@@ -18,6 +18,7 @@ AMonsterAIController::AMonsterAIController(const class FObjectInitializer& Objec
 	BehaviorComp = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviorComp"));
 	BBComp = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackboardComp"));
 
+	TargetLocationKeyName = "TargetLocation";
 	PatrolLocationKeyName = "PatrolLocation";
 	CurrentWaypointKeyName = "CurrentWaypoint";
 	MonsterTypeKeyName = "MonsterType";
@@ -35,7 +36,7 @@ void AMonsterAIController::Possess(class APawn* InPawn)
 		{
 			BBComp->InitializeBlackboard(*Monster->BehaviorTree->BlackboardAsset);
 
-			//SetType
+			SetBBMonsterType(Monster->MonsterType);
 		}
 
 		BehaviorComp->StartTree(*Monster->BehaviorTree);
@@ -55,7 +56,8 @@ AAIWaypoint* AMonsterAIController::GetWaypoint()
 	{
 		return Cast<AAIWaypoint>(BBComp->GetValueAsObject(CurrentWaypointKeyName));
 	}
-
+	
+	UE_LOG(LogTemp, Warning, TEXT("No AIController Waypoint found"));
 	return nullptr;
 }
 
@@ -82,5 +84,26 @@ void AMonsterAIController::SetTargetEnemy(APawn* NewTarget)
 	if (BBComp)
 	{
 		BBComp->SetValueAsObject(TargetEnemyKeyName, NewTarget);
+	}
+}
+
+void AMonsterAIController::SetBBMonsterType(EMonsterBehaviorType NewType)
+{
+	if (BBComp)
+	{
+		BBComp->SetValueAsEnum(MonsterTypeKeyName, (uint8)NewType);
+	}
+}
+
+void AMonsterAIController::SetMoveToTarget(APawn* Pawn)
+{
+	if (BBComp)
+	{
+		SetTargetEnemy(Pawn);
+
+		if (Pawn)
+		{
+			BBComp->SetValueAsVector(TargetLocationKeyName, Pawn->GetActorLocation());
+		}
 	}
 }

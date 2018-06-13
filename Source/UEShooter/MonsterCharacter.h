@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
+#include "Types.h"
 #include "MonsterCharacter.generated.h"
 
 /**
@@ -72,8 +73,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Attack")
 	bool bIsAttacking;
 
-	//UPROPERTY(EditAnywhere, Category = "AI")
-	//EMonsterBehaviorType MonsterType;
+	UPROPERTY(EditAnywhere, Category = "AI")
+	EMonsterBehaviorType MonsterType;
+
+	void SetMonsterType(EMonsterBehaviorType NewType);
 	 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	class UBehaviorTree* BehaviorTree;
