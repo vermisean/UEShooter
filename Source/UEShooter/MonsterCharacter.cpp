@@ -5,6 +5,7 @@
 #include "MonsterAIController.h"
 #include "AIWaypoint.h"
 #include "BaseCharacter.h"
+#include "Types.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
@@ -42,8 +43,21 @@ AMonsterCharacter::AMonsterCharacter()
 	MeleeCooldown = 1.0f;
 
 	SenseTimeout = 2.5f;
+
+	MonsterType = EMonsterBehaviorType::Patrolling;
 }
 
+
+void AMonsterCharacter::SetMonsterType(EMonsterBehaviorType NewType)
+{
+	MonsterType = NewType;
+
+	AMonsterAIController* AIController = Cast<AMonsterAIController>(GetController());
+	if (AIController)
+	{
+		AIController->SetBBMonsterType(NewType);
+	}
+}
 
 void AMonsterCharacter::BeginPlay()
 {
@@ -71,6 +85,7 @@ void AMonsterCharacter::Tick(float DeltaSeconds)
 		if (AIController)
 		{
 			bSensedTarget = false;
+			// Reset target
 			AIController->SetTargetEnemy(nullptr);
 		}
 	}
@@ -90,7 +105,8 @@ void AMonsterCharacter::OnSeePlayer(APawn* Pawn)
 	AUEShooterCharacter* SensedPawn = Cast<AUEShooterCharacter>(Pawn);
 	if (AIController && SensedPawn->IsAlive())
 	{
-		AIController->SetTargetEnemy(SensedPawn);
+		//AIController->SetTargetEnemy(SensedPawn);
+		AIController->SetMoveToTarget(SensedPawn);
 	}
 }
 
@@ -107,8 +123,14 @@ void AMonsterCharacter::OnHearNoise(APawn* PawnInstigator, const FVector& Locati
 	AMonsterAIController* AIController = Cast<AMonsterAIController>(GetController());
 	if (AIController)
 	{
-		AIController->SetTargetEnemy(PawnInstigator);
+		AIController->SetMoveToTarget(PawnInstigator);
 	}
+
+// 	AMonsterAIController* AIController = Cast<AMonsterAIController>(GetController());
+// 	if (AIController)
+// 	{
+// 		AIController->SetTargetEnemy(PawnInstigator);
+// 	}
 }
 
 void AMonsterCharacter::OnMeleeCompBeginOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
