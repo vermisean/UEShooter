@@ -21,13 +21,14 @@ class UESHOOTER_API AMonsterCharacter : public ABaseCharacter
 
 	float LastMeleeAttackTime;
 
+
+	UPROPERTY(VisibleAnywhere, Category = "AI")
+	class UPawnSensingComponent* PawnSenseComp;
+
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float SenseTimeout;
 
 	bool bSensedTarget;
-
-	UPROPERTY(VisibleAnywhere, Category = "AI")
-	class UPawnSensingComponent* PawnSenseComp;
 	
 	virtual void BeginPlay() override;
 
@@ -36,6 +37,7 @@ class UESHOOTER_API AMonsterCharacter : public ABaseCharacter
 protected:
 
 	//virtual void IsSprinting() const override;
+
 
 	UFUNCTION()
 	void OnSeePlayer(APawn* Pawn);

@@ -31,7 +31,7 @@ AMonsterCharacter::AMonsterCharacter()
 	GetMovementComponent()->NavAgentProps.AgentHeight = 192;
 
 	MeleeCollisionComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("MeleeCollision"));
-	MeleeCollisionComp->SetRelativeLocation(FVector(45, 0, 25));
+	MeleeCollisionComp->SetRelativeLocation(FVector(45, 0, 35));
 	MeleeCollisionComp->SetCapsuleRadius(35, false);
 	MeleeCollisionComp->SetCapsuleHalfHeight(60);
 	MeleeCollisionComp->SetCollisionResponseToAllChannels(ECR_Ignore);

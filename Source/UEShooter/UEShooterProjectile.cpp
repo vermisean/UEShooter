@@ -2,6 +2,7 @@
 
 #include "UEShooterProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "MonsterCharacter.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Components/SphereComponent.h"
 
@@ -45,20 +46,30 @@ AUEShooterProjectile::AUEShooterProjectile()
 
 void AUEShooterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
+	// Only add impulse and destroy projectile if we hit a physics object
+	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics() && !OtherActor->IsA(AMonsterCharacter::StaticClass()))
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 50.0f, GetActorLocation());
 		
-		SetRootComponent(HitSkinParticles);
-		HitSkinParticles->Activate(true);
+		SetRootComponent(HitParticles);
+		HitParticles->Activate(true);
+
 		CollisionComp->DestroyComponent();
 	}
-	else if((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL))
+	// If a monster
+	else if((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherActor->IsA(AMonsterCharacter::StaticClass()))
+	{
+		SetRootComponent(HitSkinParticles);
+		HitSkinParticles->Activate(true);
+
+		CollisionComp->DestroyComponent();
+	}
+	// if a static object
+	else
 	{
 		SetRootComponent(HitParticles);
-		//HitParticles->RelativeLocation = OtherActor->GetActorLocation();
 		HitParticles->Activate(true);
+
 		CollisionComp->DestroyComponent();
 	}
 
