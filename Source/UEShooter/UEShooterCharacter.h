@@ -61,9 +61,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	class USoundBase* FireSound;
 
-	/** AnimMontage to play each time we fire */
+	/** AnimMontage to play each time we fire when NOT Aiming Down Sights */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	class UAnimMontage* FireAnimation;
+
+	/** AnimMontage to play each time we fire while Aiming Down Sights*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	class UAnimMontage* FireADSAnimation;
 
 	/** Particle Effect to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -86,27 +90,16 @@ protected:
 	/** Handles stafing movement, left and right */
 	void MoveRight(float Val);
 
-	/**
-	 * Called via input to turn at a given rate.
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
 	void TurnAtRate(float Rate);
 
-	/**
-	 * Called via input to turn look up/down at a given rate.
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
 	void LookUpAtRate(float Rate);
 	
 protected:
-	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
-	// End of APawn interface
 
 public:
-	/** Returns Mesh1P subobject **/
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
-	/** Returns FirstPersonCameraComponent subobject **/
+
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
 	bool CanFire() const;
@@ -120,11 +113,37 @@ public:
 
 	void OnStopSprinting();
 
-	virtual void SetSprinting(bool NewSprinting) override;
+	virtual void SetSprinting(bool NewSprinting);
 
-	void OnStartAiming();
+	UFUNCTION(BlueprintCallable, Category = Movement)
+	bool IsSprinting() const;
 
-	void OnEndAiming();
+	float GetSprintingSpeedModifier() const;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float SprintingSpeedModifier;
+
+	void OnStartTargeting();
+
+	void OnEndTargeting();
+
+	void SetTargeting(bool NewTargeting);
+
+	/* Is player aiming down sights */
+	UFUNCTION(BlueprintCallable, Category = "Targeting")
+	bool IsTargeting() const;
+
+	float GetTargetingSpeedModifier() const;
+
+	/* Retrieve Pitch/Yaw from current camera */
+	UFUNCTION(BlueprintCallable, Category = "Targeting")
+	FRotator GetAimOffsets() const;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsTargeting;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	float TargetingSpeedModifier;
 
 private:
 	bool BWantsToFire;

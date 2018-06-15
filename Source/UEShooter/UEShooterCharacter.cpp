@@ -58,6 +58,9 @@ AUEShooterCharacter::AUEShooterCharacter()
 
 	// Default offset from the character location for projectiles to spawn
 	GunOffset = FVector(100.0f, 0.0f, 10.0f);
+
+	TargetingSpeedModifier = 0.5f;
+	SprintingSpeedModifier = 2.5f;
 }
 
 void AUEShooterCharacter::BeginPlay()
@@ -88,6 +91,10 @@ void AUEShooterCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AUEShooterCharacter::OnStartSprinting);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AUEShooterCharacter::OnStopSprinting);
 
+	// Bind aiming event
+	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &AUEShooterCharacter::OnStartTargeting);
+	PlayerInputComponent->BindAction("Aim", IE_Released, this, &AUEShooterCharacter::OnEndTargeting);
+
 	// Bind reload event
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AUEShooterCharacter::OnReload);
 
@@ -103,8 +110,6 @@ void AUEShooterCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AUEShooterCharacter::LookUpAtRate);
 
-
- 
 }
 
 bool AUEShooterCharacter::CanFire() const
@@ -136,22 +141,62 @@ void AUEShooterCharacter::OnStopSprinting()
 
 void AUEShooterCharacter::SetSprinting(bool NewSprinting)
 {
+	bWantsToRun = NewSprinting;
+
 // 	if (bWantsToRun)
 // 	{
 // 		StopWeaponFire();
 // 	}
 
-	Super::SetSprinting(NewSprinting);
 }
 
-void AUEShooterCharacter::OnStartAiming()
+bool AUEShooterCharacter::IsSprinting() const
+{
+	if (!GetCharacterMovement())
+		return false;
+
+	return bWantsToRun && !IsTargeting() && !GetVelocity().IsZero()
+		// Don't allow sprint while strafing sideways or standing still (1.0 is straight forward, -1.0 is backward while near 0 is sideways or standing still)
+		&& (GetVelocity().GetSafeNormal2D() | GetActorRotation().Vector()) > 0.8; // Changing this value to 0.1 allows for diagonal sprinting. (holding W+A or W+D keys)
+}
+
+float AUEShooterCharacter::GetSprintingSpeedModifier() const
+{
+	return SprintingSpeedModifier;
+}
+
+void AUEShooterCharacter::OnStartTargeting()
 {
 	SetTargeting(true);
 }
 
-void AUEShooterCharacter::OnEndAiming()
+void AUEShooterCharacter::OnEndTargeting()
 {
 	SetTargeting(false);
+}
+
+void AUEShooterCharacter::SetTargeting(bool NewTargeting)
+{
+	bIsTargeting = NewTargeting;
+}
+
+bool AUEShooterCharacter::IsTargeting() const
+{
+	return bIsTargeting;
+}
+
+float AUEShooterCharacter::GetTargetingSpeedModifier() const
+{
+	return TargetingSpeedModifier;
+}
+
+FRotator AUEShooterCharacter::GetAimOffsets() const
+{
+	const FVector AimDirWS = GetBaseAimRotation().Vector();
+	const FVector AimDirLS = ActorToWorld().InverseTransformVectorNoScale(AimDirWS);
+	const FRotator AimRotLS = AimDirLS.Rotation();
+
+	return AimRotLS;
 }
 
 void AUEShooterCharacter::OnReload()
@@ -243,13 +288,20 @@ void AUEShooterCharacter::OnFire()
 	}
 
 	// try and play a firing animation if specified
-	if (FireAnimation != NULL)
+	if (FireAnimation != NULL && FireADSAnimation != NULL)
 	{
-		// Get the animation object for the arms mesh
 		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
 		if (AnimInstance != NULL)
 		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
+			if (IsTargeting())
+			{
+				AnimInstance->Montage_Play(FireADSAnimation, 1.f);
+
+			}
+			else
+			{
+				AnimInstance->Montage_Play(FireAnimation, 1.f);
+			}
 		}
 	}
 }

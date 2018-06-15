@@ -11,8 +11,6 @@ ABaseCharacter::ABaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Health = 100.0f;
-	TargetingSpeedModifier = 0.5f;
-	SprintSpeedModifier = 2.0f;
 
 	NoiseEmitterComponent = CreateDefaultSubobject <UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
 
@@ -33,37 +31,11 @@ bool ABaseCharacter::IsAlive() const
 	return Health > 0.0f;
 }
 
-bool ABaseCharacter::IsSprinting()
-{
-	if (!GetCharacterMovement())
-	{
-		return false;
-	}
-
-	return bWantsToRun && !IsTargeting() && !GetVelocity().IsZero()	// Dont allow strafe sprinting or standing still sprinting
-		&& (FVector::DotProduct(GetVelocity().GetSafeNormal2D(), GetActorRotation().Vector()) > 0.1f);
-}
-
-void ABaseCharacter::SetSprinting(bool NewSprinting)
-{
-	bWantsToRun = NewSprinting;
-}
-
-float ABaseCharacter::GetSprintSpeedModifier() const
-{
-	return SprintSpeedModifier;
-}
-
 // Called when the game starts or when spawned
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-}
-
-void ABaseCharacter::SetTargeting(bool NewTargeting)
-{
-	bIsTargeting = NewTargeting;
 }
 
 float ABaseCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser)
@@ -182,24 +154,5 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-}
-
-bool ABaseCharacter::IsTargeting() const
-{
-	return bIsTargeting;
-}
-
-float ABaseCharacter::GetTargetingSpeedModifier() const
-{
-	return TargetingSpeedModifier;
-}
-
-FRotator ABaseCharacter::GetAimOffsets() const
-{
-	const FVector AimDirWS = GetBaseAimRotation().Vector();
-	const FVector AimDirLS = ActorToWorld().InverseTransformVectorNoScale(AimDirWS);
-	const FRotator AimRotLS = AimDirLS.Rotation();
-
-	return AimRotLS;
 }
 
