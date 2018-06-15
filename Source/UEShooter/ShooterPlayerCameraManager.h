@@ -12,9 +12,7 @@
 UCLASS()
 class UESHOOTER_API AShooterPlayerCameraManager : public APlayerCameraManager
 {
-	GENERATED_BODY()
-	
-	AShooterPlayerCameraManager(const FObjectInitializer& ObjectInitializer);
+	GENERATED_UCLASS_BODY()
 
 	virtual void UpdateCamera(float DeltaTime) override;
 

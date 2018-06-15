@@ -9,6 +9,8 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "Engine/World.h"
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "UEShooter.h"
@@ -31,7 +33,7 @@ AMonsterCharacter::AMonsterCharacter()
 	GetMovementComponent()->NavAgentProps.AgentHeight = 192;
 
 	MeleeCollisionComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("MeleeCollision"));
-	MeleeCollisionComp->SetRelativeLocation(FVector(45, 0, 25));
+	MeleeCollisionComp->SetRelativeLocation(FVector(45, 0, 35));
 	MeleeCollisionComp->SetCapsuleRadius(35, false);
 	MeleeCollisionComp->SetCapsuleHalfHeight(60);
 	MeleeCollisionComp->SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -105,8 +107,8 @@ void AMonsterCharacter::OnSeePlayer(APawn* Pawn)
 	AUEShooterCharacter* SensedPawn = Cast<AUEShooterCharacter>(Pawn);
 	if (AIController && SensedPawn->IsAlive())
 	{
-		//AIController->SetTargetEnemy(SensedPawn);
-		AIController->SetMoveToTarget(SensedPawn);
+		AIController->SetTargetEnemy(SensedPawn);
+		//AIController->SetMoveToTarget(SensedPawn);
 	}
 }
 
@@ -120,17 +122,11 @@ void AMonsterCharacter::OnHearNoise(APawn* PawnInstigator, const FVector& Locati
 	LastHeardTime = GetWorld()->GetTimeSeconds();
 	bSensedTarget = true;
 
-	AMonsterAIController* AIController = Cast<AMonsterAIController>(GetController());
-	if (AIController)
-	{
-		AIController->SetMoveToTarget(PawnInstigator);
+ 	AMonsterAIController* AIController = Cast<AMonsterAIController>(GetController());
+ 	if (AIController)
+ 	{
+ 		AIController->SetMoveToTarget(PawnInstigator);
 	}
-
-// 	AMonsterAIController* AIController = Cast<AMonsterAIController>(GetController());
-// 	if (AIController)
-// 	{
-// 		AIController->SetTargetEnemy(PawnInstigator);
-// 	}
 }
 
 void AMonsterCharacter::OnMeleeCompBeginOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -186,10 +182,18 @@ void AMonsterCharacter::PerformMeleeStrike(AActor* HitActor)
 			DmgEvent.Damage = MeleeDamage;
 
 			HitActor->TakeDamage(DmgEvent.Damage, DmgEvent, GetController(), this);
-
+			
+			//MeleeAnimMontage->CanBeUsedInMontage(true);
 			PlayAnimMontage(MeleeAnimMontage);
-			// TODO Play sound
 
+			//UAnimInstance* AnimInstance = FindComponentByClass<USkeletalMeshComponent>()->GetAnimInstance();
+			//if (AnimInstance != NULL)
+			//{
+			//	AnimInstance->Montage_Play(MeleeAnimMontage, 1.f);
+
+
+				// TODO Play sound
+			//}
 		}
 	}
 }
@@ -197,4 +201,9 @@ void AMonsterCharacter::PerformMeleeStrike(AActor* HitActor)
 void AMonsterCharacter::PlayHit(float DamageTaken, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser, bool bKilled)
 {
 	//Super::PlayHit(DamageTaken, DamageEvent, PawnInstigator, DamageCauser, bKilled);
+}
+
+UAudioComponent* AMonsterCharacter::PlayCharacterSound(USoundCue* CueToPlay)
+{
+	return nullptr;
 }

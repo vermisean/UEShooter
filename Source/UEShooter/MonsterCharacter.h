@@ -21,13 +21,14 @@ class UESHOOTER_API AMonsterCharacter : public ABaseCharacter
 
 	float LastMeleeAttackTime;
 
+
+	UPROPERTY(VisibleAnywhere, Category = "AI")
+	class UPawnSensingComponent* PawnSenseComp;
+
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float SenseTimeout;
 
 	bool bSensedTarget;
-
-	UPROPERTY(VisibleAnywhere, Category = "AI")
-	class UPawnSensingComponent* PawnSenseComp;
 	
 	virtual void BeginPlay() override;
 
@@ -36,6 +37,7 @@ class UESHOOTER_API AMonsterCharacter : public ABaseCharacter
 protected:
 
 	//virtual void IsSprinting() const override;
+
 
 	UFUNCTION()
 	void OnSeePlayer(APawn* Pawn);
@@ -65,6 +67,23 @@ protected:
 	float MeleeCooldown;
 
 	virtual void PlayHit(float DamageTaken, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser, bool bKilled);
+
+	class UAudioComponent* PlayCharacterSound(class USoundCue* CueToPlay);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* SoundPlayerNoticed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* SoundHunting;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* SoundIdle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* SoundWandering;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* SoundAttackMelee;
 
 public:
 

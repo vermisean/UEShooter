@@ -2,6 +2,7 @@
 
 #include "ShooterPlayerCameraManager.h"
 #include "UEShooterCharacter.h"
+#include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
 
 
 
@@ -10,6 +11,10 @@ AShooterPlayerCameraManager::AShooterPlayerCameraManager(const FObjectInitialize
 {
 	NormalFOV = 90.0f;
 	ADSFOV = 65.0f;
+
+	ViewPitchMin = -80.0f;
+	ViewPitchMax = 87.0f;
+	bAlwaysApplyModifiers = true;
 }
 
 void AShooterPlayerCameraManager::UpdateCamera(float DeltaTime)
@@ -18,9 +23,9 @@ void AShooterPlayerCameraManager::UpdateCamera(float DeltaTime)
 
 	if (MyPawn)
 	{
-		//const float ADSFOV = MyPawn->IsAiming() ? ADSFOV : NormalFOV;
-		//DefaultFOV = FMath::FInterpTo(DefaultFOV, TargetFOV, DeltaTime, 20.0f);
-		//SetFOV(DefaultFOV);
+		const float TargetingFOV = MyPawn->IsTargeting() ? ADSFOV : NormalFOV;
+		DefaultFOV = FMath::FInterpTo(DefaultFOV, TargetingFOV, DeltaTime, 20.0f);
+		SetFOV(DefaultFOV);
 	}
 
 	Super::UpdateCamera(DeltaTime);
