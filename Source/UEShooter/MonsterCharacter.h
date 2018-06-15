@@ -68,6 +68,23 @@ protected:
 
 	virtual void PlayHit(float DamageTaken, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser, bool bKilled);
 
+	class UAudioComponent* PlayCharacterSound(class USoundCue* CueToPlay);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* SoundPlayerNoticed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* SoundHunting;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* SoundIdle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* SoundWandering;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* SoundAttackMelee;
+
 public:
 
 	AMonsterCharacter();
