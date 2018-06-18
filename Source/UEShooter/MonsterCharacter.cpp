@@ -10,6 +10,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
+#include "Runtime/Engine/Classes/GameFramework/PawnMovementComponent.h"
 #include "Components/AudioComponent.h"
 #include "Engine/World.h"
 #include "Runtime/Engine/Public/TimerManager.h"
@@ -26,7 +27,7 @@ AMonsterCharacter::AMonsterCharacter(const class FObjectInitializer& ObjectIniti
 	PawnSenseComp->HearingThreshold = 600;
 	PawnSenseComp->LOSHearingThreshold = 1200;
 
-	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel., ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 	GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f, false);
 	GetCapsuleComponent()->SetCapsuleRadius(42.0f);
 
@@ -108,7 +109,7 @@ void AMonsterCharacter::OnSeePlayer(APawn* Pawn)
 	AUEShooterCharacter* SensedPawn = Cast<AUEShooterCharacter>(Pawn);
 	if (AIController && SensedPawn->IsAlive())
 	{
-		//GetMovementComponent()->walk
+		//GetMovementComponent()->GetMaxSpeed() = 
 		AIController->SetTargetEnemy(SensedPawn);
 		//AIController->SetMoveToTarget(SensedPawn);
 	}
