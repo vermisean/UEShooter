@@ -38,6 +38,11 @@ bool ABaseCharacter::IsAlive() const
 
 bool ABaseCharacter::IsSprinting() const
 {
+	if (!GetCharacterMovement())
+	{
+		return false;
+	}
+
 	return bWantsToRun && !GetVelocity().IsZero() && (GetVelocity().GetSafeNormal2D() | GetActorRotation().Vector()) > 0.1;
 }
 

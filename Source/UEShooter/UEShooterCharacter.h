@@ -34,6 +34,8 @@ class AUEShooterCharacter : public ABaseCharacter
 
 	float LastMakeNoiseTime;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 public:
 	AUEShooterCharacter(const class FObjectInitializer& ObjectInitializer);
 

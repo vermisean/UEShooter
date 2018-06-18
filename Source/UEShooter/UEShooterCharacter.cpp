@@ -17,6 +17,16 @@ DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 //////////////////////////////////////////////////////////////////////////
 // AUEShooterCharacter
 
+void AUEShooterCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (bWantsToRun && !IsSprinting())
+	{
+		SetSprinting(true);
+	}
+}
+
 AUEShooterCharacter::AUEShooterCharacter(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -26,6 +36,8 @@ AUEShooterCharacter::AUEShooterCharacter(const class FObjectInitializer& ObjectI
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
+
+	UCharacterMovementComponent* MoveComp = GetCharacterMovement();
 
 	// Create a CameraComponent	
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
@@ -135,13 +147,6 @@ void AUEShooterCharacter::OnStartSprinting()
 {
 	SetSprinting(true);
 
-	
-// 	float MaxSpeed = GetMovementComponent()->GetMaxSpeed();
-// 
-// 	if (IsSprinting())
-// 	{
-// 		Max
-// 	}
 }
 
 void AUEShooterCharacter::OnStopSprinting()
