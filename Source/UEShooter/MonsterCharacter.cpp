@@ -17,7 +17,8 @@
 
 
 
-AMonsterCharacter::AMonsterCharacter()
+AMonsterCharacter::AMonsterCharacter(const class FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	PawnSenseComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSenseComp"));
 	PawnSenseComp->SetPeripheralVisionAngle(60.0f);

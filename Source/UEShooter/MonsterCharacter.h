@@ -89,7 +89,7 @@ protected:
 
 public:
 
-	AMonsterCharacter();
+	AMonsterCharacter(const class FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(BlueprintReadWrite, Category = "Attack")
 	bool bIsAttacking;

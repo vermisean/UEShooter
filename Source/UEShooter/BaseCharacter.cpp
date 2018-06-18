@@ -2,10 +2,14 @@
 
 #include "BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "ShooterCharMovementComponent.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 
 // Sets default values
-ABaseCharacter::ABaseCharacter()
+
+ABaseCharacter::ABaseCharacter(const class FObjectInitializer& ObjectInitializer)
+// Override the movement class from the base class to our own to support multiple speeds (eg. sprinting) 
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterCharMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -14,6 +18,7 @@ ABaseCharacter::ABaseCharacter()
 
 	NoiseEmitterComponent = CreateDefaultSubobject <UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
 
+	SprintingSpeedModifier = 2.5f;
 }
 
 float ABaseCharacter::GetMaxHealth() const
@@ -30,6 +35,22 @@ bool ABaseCharacter::IsAlive() const
 {
 	return Health > 0.0f;
 }
+
+bool ABaseCharacter::IsSprinting() const
+{
+	return bWantsToRun && !GetVelocity().IsZero() && (GetVelocity().GetSafeNormal2D() | GetActorRotation().Vector()) > 0.1;
+}
+
+void ABaseCharacter::SetSprinting(bool NewSprinting)
+{
+	bWantsToRun = NewSprinting;
+
+}
+
+ float ABaseCharacter::GetSprintingSpeedModifier() const
+ {
+	 return SprintingSpeedModifier;
+ }
 
 // Called when the game starts or when spawned
 void ABaseCharacter::BeginPlay()

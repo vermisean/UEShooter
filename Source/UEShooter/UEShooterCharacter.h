@@ -35,7 +35,7 @@ class AUEShooterCharacter : public ABaseCharacter
 	float LastMakeNoiseTime;
 
 public:
-	AUEShooterCharacter();
+	AUEShooterCharacter(const class FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void BeginPlay();
@@ -119,9 +119,6 @@ public:
 	bool IsSprinting() const;
 
 	float GetSprintingSpeedModifier() const;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Movement")
-	float SprintingSpeedModifier;
 
 	void OnStartTargeting();
 
