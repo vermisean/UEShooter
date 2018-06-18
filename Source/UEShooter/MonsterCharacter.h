@@ -68,6 +68,8 @@ protected:
 
 	virtual void PlayHit(float DamageTaken, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser, bool bKilled);
 
+	//virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
+
 	class UAudioComponent* PlayCharacterSound(class USoundCue* CueToPlay);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")

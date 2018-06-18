@@ -107,6 +107,7 @@ void AMonsterCharacter::OnSeePlayer(APawn* Pawn)
 	AUEShooterCharacter* SensedPawn = Cast<AUEShooterCharacter>(Pawn);
 	if (AIController && SensedPawn->IsAlive())
 	{
+		//GetMovementComponent()->walk
 		AIController->SetTargetEnemy(SensedPawn);
 		//AIController->SetMoveToTarget(SensedPawn);
 	}
@@ -201,7 +202,19 @@ void AMonsterCharacter::PerformMeleeStrike(AActor* HitActor)
 void AMonsterCharacter::PlayHit(float DamageTaken, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser, bool bKilled)
 {
 	//Super::PlayHit(DamageTaken, DamageEvent, PawnInstigator, DamageCauser, bKilled);
+
 }
+
+// float AMonsterCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser)
+// {
+// 	//Super::TakeDamage(Damage, FDamageEvent, EventInstigator, DamageCauser);
+// 
+// 	if (Health <= 0)
+// 	{
+// 		SetRagDollPhysics();
+// 	}
+// 
+// }
 
 UAudioComponent* AMonsterCharacter::PlayCharacterSound(USoundCue* CueToPlay)
 {
