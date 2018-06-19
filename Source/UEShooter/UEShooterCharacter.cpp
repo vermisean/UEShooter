@@ -318,6 +318,11 @@ void AUEShooterCharacter::OnFire()
 			}
 		}
 	}
+
+	if (GunShake != NULL)
+	{
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(GunShake, 1.0f);
+	}
 }
 
 

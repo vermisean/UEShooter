@@ -39,6 +39,10 @@ class AUEShooterCharacter : public ABaseCharacter
 public:
 	AUEShooterCharacter(const class FObjectInitializer& ObjectInitializer);
 
+	// Gun Camera Shake Asset
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShake> GunShake;
+
 protected:
 	virtual void BeginPlay();
 

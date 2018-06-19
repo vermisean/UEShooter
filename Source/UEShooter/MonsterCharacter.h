@@ -92,6 +92,9 @@ protected:
 	USoundCue* SoundAttackMelee;
 
 public:
+	// Damage Camera Shake Asset
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShake> DamageShake;
 
 	AMonsterCharacter(const class FObjectInitializer& ObjectInitializer);
 

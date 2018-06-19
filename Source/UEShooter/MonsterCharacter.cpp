@@ -186,6 +186,13 @@ void AMonsterCharacter::PerformMeleeStrike(AActor* HitActor)
 
 			HitActor->TakeDamage(DmgEvent.Damage, DmgEvent, GetController(), this);
 			
+			// Play camera shake
+			if (DamageShake != NULL)
+			{
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(DamageShake, 1.0f);
+			}
+			//UGameplayStatics::PlayWorldCameraShake(GetWorld(),
+			
 			//MeleeAnimMontage->CanBeUsedInMontage(true);
 			PlayAnimMontage(MeleeAnimMontage);
 
