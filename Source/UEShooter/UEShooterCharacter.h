@@ -34,8 +34,14 @@ class AUEShooterCharacter : public ABaseCharacter
 
 	float LastMakeNoiseTime;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 public:
-	AUEShooterCharacter();
+	AUEShooterCharacter(const class FObjectInitializer& ObjectInitializer);
+
+	// Gun Camera Shake Asset
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShake> GunShake;
 
 protected:
 	virtual void BeginPlay();
@@ -119,9 +125,6 @@ public:
 	bool IsSprinting() const;
 
 	float GetSprintingSpeedModifier() const;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Movement")
-	float SprintingSpeedModifier;
 
 	void OnStartTargeting();
 

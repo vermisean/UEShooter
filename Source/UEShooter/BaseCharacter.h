@@ -16,7 +16,8 @@ class UESHOOTER_API ABaseCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	ABaseCharacter();
+	//ABaseCharacter();
+	ABaseCharacter(const class FObjectInitializer& ObjectInitializer);
 
 	//Health
 	UFUNCTION(BlueprintCallable, Category = "Condition")
@@ -28,6 +29,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Condition")
 	bool IsAlive() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	virtual bool IsSprinting() const;
+
+	virtual void SetSprinting(bool NewSprinting);
+
+	float GetSprintingSpeedModifier() const;
+
+	//virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,6 +46,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Condition")
 	float Health;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float SprintingSpeedModifier;
+
+	// Character wants to run, checked during Tick to see if allowed
+	UPROPERTY()
 	bool bWantsToRun;
 
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;

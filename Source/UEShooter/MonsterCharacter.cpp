@@ -10,6 +10,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
+#include "Runtime/Engine/Classes/GameFramework/PawnMovementComponent.h"
 #include "Components/AudioComponent.h"
 #include "Engine/World.h"
 #include "Runtime/Engine/Public/TimerManager.h"
@@ -17,7 +18,8 @@
 
 
 
-AMonsterCharacter::AMonsterCharacter()
+AMonsterCharacter::AMonsterCharacter(const class FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	PawnSenseComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSenseComp"));
 	PawnSenseComp->SetPeripheralVisionAngle(60.0f);
@@ -25,11 +27,11 @@ AMonsterCharacter::AMonsterCharacter()
 	PawnSenseComp->HearingThreshold = 600;
 	PawnSenseComp->LOSHearingThreshold = 1200;
 
-	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel., ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 	GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f, false);
 	GetCapsuleComponent()->SetCapsuleRadius(42.0f);
 
-	GetMovementComponent()->NavAgentProps.AgentRadius = 42;
+	GetMovementComponent()->NavAgentProps.AgentRadius = 38;
 	GetMovementComponent()->NavAgentProps.AgentHeight = 192;
 
 	MeleeCollisionComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("MeleeCollision"));
@@ -107,6 +109,7 @@ void AMonsterCharacter::OnSeePlayer(APawn* Pawn)
 	AUEShooterCharacter* SensedPawn = Cast<AUEShooterCharacter>(Pawn);
 	if (AIController && SensedPawn->IsAlive())
 	{
+		//GetMovementComponent()->GetMaxSpeed() = 
 		AIController->SetTargetEnemy(SensedPawn);
 		//AIController->SetMoveToTarget(SensedPawn);
 	}
@@ -183,6 +186,13 @@ void AMonsterCharacter::PerformMeleeStrike(AActor* HitActor)
 
 			HitActor->TakeDamage(DmgEvent.Damage, DmgEvent, GetController(), this);
 			
+			// Play camera shake
+			if (DamageShake != NULL)
+			{
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(DamageShake, 1.0f);
+			}
+			//UGameplayStatics::PlayWorldCameraShake(GetWorld(),
+			
 			//MeleeAnimMontage->CanBeUsedInMontage(true);
 			PlayAnimMontage(MeleeAnimMontage);
 
@@ -201,7 +211,19 @@ void AMonsterCharacter::PerformMeleeStrike(AActor* HitActor)
 void AMonsterCharacter::PlayHit(float DamageTaken, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser, bool bKilled)
 {
 	//Super::PlayHit(DamageTaken, DamageEvent, PawnInstigator, DamageCauser, bKilled);
+
 }
+
+// float AMonsterCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser)
+// {
+// 	//Super::TakeDamage(Damage, FDamageEvent, EventInstigator, DamageCauser);
+// 
+// 	if (Health <= 0)
+// 	{
+// 		SetRagDollPhysics();
+// 	}
+// 
+// }
 
 UAudioComponent* AMonsterCharacter::PlayCharacterSound(USoundCue* CueToPlay)
 {

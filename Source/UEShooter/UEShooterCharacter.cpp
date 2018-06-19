@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
+#include "Runtime/Engine/Classes/GameFramework/PawnMovementComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -16,7 +17,18 @@ DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 //////////////////////////////////////////////////////////////////////////
 // AUEShooterCharacter
 
-AUEShooterCharacter::AUEShooterCharacter()
+void AUEShooterCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (bWantsToRun && !IsSprinting())
+	{
+		SetSprinting(true);
+	}
+}
+
+AUEShooterCharacter::AUEShooterCharacter(const class FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -24,6 +36,8 @@ AUEShooterCharacter::AUEShooterCharacter()
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
+
+	UCharacterMovementComponent* MoveComp = GetCharacterMovement();
 
 	// Create a CameraComponent	
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
@@ -132,6 +146,7 @@ bool AUEShooterCharacter::IsFiring() const
 void AUEShooterCharacter::OnStartSprinting()
 {
 	SetSprinting(true);
+
 }
 
 void AUEShooterCharacter::OnStopSprinting()
@@ -148,6 +163,7 @@ void AUEShooterCharacter::SetSprinting(bool NewSprinting)
 // 		StopWeaponFire();
 // 	}
 
+	Super::SetSprinting(NewSprinting);
 }
 
 bool AUEShooterCharacter::IsSprinting() const
@@ -155,9 +171,7 @@ bool AUEShooterCharacter::IsSprinting() const
 	if (!GetCharacterMovement())
 		return false;
 
-	return bWantsToRun && !IsTargeting() && !GetVelocity().IsZero()
-		// Don't allow sprint while strafing sideways or standing still (1.0 is straight forward, -1.0 is backward while near 0 is sideways or standing still)
-		&& (GetVelocity().GetSafeNormal2D() | GetActorRotation().Vector()) > 0.8; // Changing this value to 0.1 allows for diagonal sprinting. (holding W+A or W+D keys)
+	return bWantsToRun && !IsTargeting() && !GetVelocity().IsZero() && (GetVelocity().GetSafeNormal2D() | GetActorRotation().Vector()) > 0.1; 
 }
 
 float AUEShooterCharacter::GetSprintingSpeedModifier() const
@@ -303,6 +317,11 @@ void AUEShooterCharacter::OnFire()
 				AnimInstance->Montage_Play(FireAnimation, 1.f);
 			}
 		}
+	}
+
+	if (GunShake != NULL)
+	{
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(GunShake, 1.0f);
 	}
 }
 

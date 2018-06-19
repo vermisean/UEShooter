@@ -5,6 +5,9 @@
 #include "MonsterCharacter.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Components/SphereComponent.h"
+#include "UEShooterCharacter.h"
+#include "Engine/World.h"
+
 
 AUEShooterProjectile::AUEShooterProjectile() 
 {
@@ -38,10 +41,46 @@ AUEShooterProjectile::AUEShooterProjectile()
 	HitParticles->AttachToComponent(CollisionComp, FAttachmentTransformRules::KeepRelativeTransform);
 	HitParticles->bAutoActivate = false;
 
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUEShooterCharacter::StaticClass(), FoundActors);
+	if (FoundActors.Num() > 0)
+	{
+		AActor* FoundActor = FoundActors.Last();
+		AUEShooterCharacter* FoundChar = Cast<AUEShooterCharacter>(FoundActor);
+		SetOwningPawn(FoundChar);
+	}
 
+	 
+	HitDamage = 26;
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
+}
+
+void AUEShooterProjectile::SetOwningPawn(AUEShooterCharacter* NewOwner)
+{
+	if (MyPawn != NewOwner)
+	{
+		Instigator = NewOwner;
+		MyPawn = NewOwner;
+	}
+}
+
+class AUEShooterCharacter* AUEShooterProjectile::GetPawnOwner() const
+{
+	return MyPawn;
+}
+
+void AUEShooterProjectile::DealDamage(const FHitResult& Impact, const FVector& ShootDir)
+{
+	float ActualHitDamage = HitDamage;
+
+	FPointDamageEvent PointDmg;
+	PointDmg.HitInfo = Impact;
+	PointDmg.ShotDirection = ShootDir;
+	PointDmg.Damage = ActualHitDamage;
+
+	Impact.GetActor()->TakeDamage(PointDmg.Damage, PointDmg, MyPawn->Controller, this);
 }
 
 void AUEShooterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -61,6 +100,14 @@ void AUEShooterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 	{
 		SetRootComponent(HitSkinParticles);
 		HitSkinParticles->Activate(true);
+		AMonsterCharacter* HitEnemy = Cast<AMonsterCharacter>(OtherActor);
+		if (HitEnemy)
+		{
+			FPointDamageEvent DmgEvent;
+			DmgEvent.Damage = HitDamage;
+
+			OtherActor->TakeDamage(DmgEvent.Damage, DmgEvent, MyPawn->Controller, this);
+		}
 
 		CollisionComp->DestroyComponent();
 	}
@@ -80,4 +127,14 @@ void AUEShooterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 void AUEShooterProjectile::OnTimerExpire()
 {
 	Destroy();
+}
+
+bool AUEShooterProjectile::ShouldDealDamage(AActor* TestActor) const
+{
+	if (TestActor)
+	{
+		return true;
+	}
+
+	return false;
 }

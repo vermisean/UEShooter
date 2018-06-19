@@ -37,7 +37,11 @@ class UESHOOTER_API AMonsterCharacter : public ABaseCharacter
 protected:
 
 	//virtual void IsSprinting() const override;
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float DefaultMaxSpeed;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float SprintMaxSpeed;
 
 	UFUNCTION()
 	void OnSeePlayer(APawn* Pawn);
@@ -68,6 +72,8 @@ protected:
 
 	virtual void PlayHit(float DamageTaken, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser, bool bKilled);
 
+	//virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
+
 	class UAudioComponent* PlayCharacterSound(class USoundCue* CueToPlay);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
@@ -86,8 +92,11 @@ protected:
 	USoundCue* SoundAttackMelee;
 
 public:
+	// Damage Camera Shake Asset
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShake> DamageShake;
 
-	AMonsterCharacter();
+	AMonsterCharacter(const class FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(BlueprintReadWrite, Category = "Attack")
 	bool bIsAttacking;
