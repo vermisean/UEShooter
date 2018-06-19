@@ -36,6 +36,9 @@ public:
 
 	float GetSprintingSpeedModifier() const;
 
+	//virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

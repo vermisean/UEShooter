@@ -119,6 +119,12 @@ void ABaseCharacter::OnDeath(float KillingDamage, FDamageEvent const& DamageEven
 	{
 		return;
 	}
+	USkeletalMeshComponent* Mesh = GetMesh();
+	if (Mesh)
+	{
+		Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
+	}
+	SetActorEnableCollision(true);
 
 	DetachFromControllerPendingDestroy();
 
@@ -158,9 +164,9 @@ void ABaseCharacter::SetRagDollPhysics()
 
 	if (bInRagdoll)
 	{
-		TurnOff();
-		SetActorHiddenInGame(true);
-		SetLifeSpan(1.0f);
+	//	TurnOff();
+	//	SetActorHiddenInGame(true);
+		SetLifeSpan(10.0f);
 	}
 	else
 	{
