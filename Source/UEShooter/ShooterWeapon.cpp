@@ -106,6 +106,81 @@ bool AShooterWeapon::CanFire() const
 	return bPawnCanFire && bStateOK && !bPendingReload;
 }
 
+void AShooterWeapon::SimulateWeaponFire()
+{
+	if (MuzzleFX)
+	{
+		MuzzleParticles = UGameplayStatics::SpawnEmitterAttached(MuzzleFX, Mesh, MuzzleAttachPoint);
+	}
+
+	if (!bPlayingFireAnim)
+	{
+		PlayWeaponAnimation(FireAnim);
+		bPlayingFireAnim = true;
+	}
+
+	PlayWeaponSound(FireSound);
+}
+
+void AShooterWeapon::StopSimulatingWeaponFire()
+{
+	if (bPlayingFireAnim)
+	{
+		StopWeaponAnimation(FireAnim);
+		bPlayingFireAnim = false;
+	}
+}
+
+FVector AShooterWeapon::GetAdjustedAim() const
+{
+	AUEShooterPlayerController* const PC = Instigator ? Cast<AUEShooterPlayerController>(Instigator->Controller) : nullptr;
+	FVector FinalAim = FVector::ZeroVector;
+
+	if (PC)
+	{
+		FVector CamLoc;
+		FRotator CamRot;
+		PC->GetPlayerViewPoint(CamLoc, CamRot);
+
+		FinalAim = CamRot.Vector();
+	}
+	else if (Instigator)
+	{
+		FinalAim = Instigator->GetBaseAimRotation().Vector();
+	}
+
+	return FinalAim;
+}
+
+FVector AShooterWeapon::GetCameraDamageStartLocation(const FVector& AimDir) const
+{
+	AUEShooterPlayerController* PC = MyPawn ? Cast<AUEShooterPlayerController>(MyPawn->Controller) : nullptr;
+	FVector OutStartTrace = FVector::ZeroVector;
+
+	if (PC)
+	{
+		FRotator DummyRot;
+		PC->GetPlayerViewPoint(OutStartTrace, DummyRot);
+
+		// Adjust trace so there is nothing blocking the ray between the camera and the pawn, and calculate distance from adjusted start
+		OutStartTrace = OutStartTrace + AimDir * (FVector::DotProduct((Instigator->GetActorLocation() - OutStartTrace), AimDir));
+	}
+
+	return OutStartTrace;
+}
+
+FHitResult AShooterWeapon::WeaponTrace(const FVector& TraceFrom, const FVector& TraceTo) const
+{
+	FCollisionQueryParams TraceParams(TEXT("WeaponTrace"), true, Instigator);
+	TraceParams.bTraceAsyncScene = true;
+	TraceParams.bReturnPhysicalMaterial = true;
+
+	FHitResult Hit(ForceInit);
+	GetWorld()->LineTraceSingleByChannel(Hit, TraceFrom, TraceTo, COLLISION_WEAPON, TraceParams);
+
+	return Hit;
+}
+
 void AShooterWeapon::SetWeaponState(EWeaponState NewState)
 {
 	const EWeaponState PrevState = CurrentState;
@@ -140,11 +215,11 @@ void AShooterWeapon::HandleFiring()
 {
 	if (CurrentAmmoInClip > 0 && CanFire())
 	{
-		StartWeaponFire();
+		SimulateWeaponFire();
 
 		if (MyPawn)
 		{
-			//FireWeapon();
+			FireWeapon();
 
 			UseAmmo();
 		}
@@ -182,35 +257,6 @@ void AShooterWeapon::HandleFiring()
 // 	}
 
 	LastFireTime = GetWorld()->GetTimeSeconds();
-}
-
-void AShooterWeapon::StartWeaponFire()
-{
-	if (MuzzleFX)
-	{
-		MuzzleParticles = UGameplayStatics::SpawnEmitterAttached(MuzzleFX, Mesh, MuzzleAttachPoint);
-	}
-
-	if (!bPlayingFireAnim)
-	{
-		PlayWeaponAnimation(FireAnim);
-		bPlayingFireAnim = true;
-	}
-
-	PlayWeaponSound(FireSound);
-
-
-}
-
-void AShooterWeapon::StopWeaponFire()
-{
-	if (bPlayingFireAnim)
-	{
-		StopWeaponAnimation(FireAnim);
-		bPlayingFireAnim = false;
-	}
-
-
 }
 
 FVector AShooterWeapon::GetMuzzleLocation() const

@@ -61,6 +61,8 @@ void AUEShooterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 	{
 		SetRootComponent(HitSkinParticles);
 		HitSkinParticles->Activate(true);
+		AMonsterCharacter* HitEnemy = Cast<AMonsterCharacter>(OtherActor);
+		//HitEnemy->TakeDamage() //TODO implement damage
 
 		CollisionComp->DestroyComponent();
 	}

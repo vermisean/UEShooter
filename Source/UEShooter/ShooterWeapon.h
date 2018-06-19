@@ -64,11 +64,17 @@ protected:
 
 	bool CanFire() const;
 
-	//FVector GetAdjustedAim() const;
+	virtual void SimulateWeaponFire();
 
-	//FVector GetCameraDamageStartLocation(const FVector& AimDir) const;
+	virtual void StopSimulatingWeaponFire();
 
-	//FHitResult WeaponTrace(const FVector& TraceFrom, const FVector& TraceTo) const;
+	FVector GetAdjustedAim() const;
+
+	FVector GetCameraDamageStartLocation(const FVector& AimDir) const;
+
+	FHitResult WeaponTrace(const FVector& TraceFrom, const FVector& TraceTo) const;
+
+	virtual void FireWeapon() PURE_VIRTUAL(ASWeapon::FireWeapon, );
 
 private:
 
@@ -98,7 +104,7 @@ private:
 	class UParticleSystem* MuzzleFX;
 
 	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* FireAnim;
+	class UAnimMontage* FireAnim;
 
 	UPROPERTY(EditDefaultsOnly)
 	class UParticleSystemComponent* MuzzleParticles;
@@ -109,11 +115,6 @@ private:
 	bool bPlayingFireAnim;
 
 protected:
-
-	virtual void StartWeaponFire();
-
-	virtual void StopWeaponFire();
-
 	FVector GetMuzzleLocation() const;
 
 	FVector GetMuzzleDirection() const;
