@@ -31,7 +31,7 @@ AMonsterCharacter::AMonsterCharacter(const class FObjectInitializer& ObjectIniti
 	GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f, false);
 	GetCapsuleComponent()->SetCapsuleRadius(42.0f);
 
-	GetMovementComponent()->NavAgentProps.AgentRadius = 42;
+	GetMovementComponent()->NavAgentProps.AgentRadius = 38;
 	GetMovementComponent()->NavAgentProps.AgentHeight = 192;
 
 	MeleeCollisionComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("MeleeCollision"));
