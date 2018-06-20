@@ -152,7 +152,6 @@ void AMonsterCharacter::OnRetriggerMeleeStrike()
 	for (int32 i = 0; i < Overlaps.Num(); i++)
 	{
 		ABaseCharacter* OverlappingPawn = Cast<ABaseCharacter>(Overlaps[i]);
-		// attack one player at max
 		break;
 	}
 
@@ -169,7 +168,7 @@ void AMonsterCharacter::PerformMeleeStrike(AActor* HitActor)
 		// Set timer to start attacking
 		if (!TimerHandle_MeleeAttack.IsValid())
 		{
-			// TODO Set Timer
+			GetWorldTimerManager().SetTimer(TimerHandle_MeleeAttack, this, &AMonsterCharacter::OnRetriggerMeleeStrike, MeleeCooldown, true);
 		}
 
 		return;
@@ -187,19 +186,10 @@ void AMonsterCharacter::PerformMeleeStrike(AActor* HitActor)
 
 			HitActor->TakeDamage(DmgEvent.Damage, DmgEvent, GetController(), this);
 			
-			//UGameplayStatics::PlayWorldCameraShake(GetWorld(),
-			
-			//MeleeAnimMontage->CanBeUsedInMontage(true);
-			PlayAnimMontage(MeleeAnimMontage);
-
-			//UAnimInstance* AnimInstance = FindComponentByClass<USkeletalMeshComponent>()->GetAnimInstance();
-			//if (AnimInstance != NULL)
-			//{
-			//	AnimInstance->Montage_Play(MeleeAnimMontage, 1.f);
-
-
-				// TODO Play sound
-			//}
+			if (MeleeAnimMontage != NULL)
+			{
+				PlayAnimMontage(MeleeAnimMontage);
+			}
 		}
 	}
 }
@@ -214,16 +204,21 @@ float AMonsterCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dam
 {
 	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 
-	// Enemy should notice player when hit
 	if (this->IsAlive())
 	{
+		// Play hit animation
+		if (DamageTakenAnimMontage != NULL)
+		{
+			PlayAnimMontage(DamageTakenAnimMontage);
+		}
+
+		// Enemy should notice player when hit
+
 		AMonsterAIController* AIController = Cast<AMonsterAIController>(GetController());
 		AUEShooterProjectile* Projectile = Cast<AUEShooterProjectile>(DamageCauser);
 		AUEShooterCharacter* PC = Cast<AUEShooterCharacter>(Projectile->GetPawnOwner());
 		AIController->SetTargetEnemy(PC);
 	}
-
-	
 
 	return ActualDamage;
 }

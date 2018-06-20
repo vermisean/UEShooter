@@ -66,6 +66,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	class UAnimMontage* MeleeAnimMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	class UAnimMontage* DamageTakenAnimMontage;
+
 	FTimerHandle TimerHandle_MeleeAttack;
 
 	float MeleeCooldown;
