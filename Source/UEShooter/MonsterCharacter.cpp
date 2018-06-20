@@ -6,6 +6,7 @@
 #include "AIWaypoint.h"
 #include "BaseCharacter.h"
 #include "Types.h"
+#include "UEShooterProjectile.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
@@ -186,11 +187,6 @@ void AMonsterCharacter::PerformMeleeStrike(AActor* HitActor)
 
 			HitActor->TakeDamage(DmgEvent.Damage, DmgEvent, GetController(), this);
 			
-			// Play camera shake
-			if (DamageShake != NULL)
-			{
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(DamageShake, 1.0f);
-			}
 			//UGameplayStatics::PlayWorldCameraShake(GetWorld(),
 			
 			//MeleeAnimMontage->CanBeUsedInMontage(true);
@@ -214,16 +210,24 @@ void AMonsterCharacter::PlayHit(float DamageTaken, struct FDamageEvent const& Da
 
 }
 
-// float AMonsterCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser)
-// {
-// 	//Super::TakeDamage(Damage, FDamageEvent, EventInstigator, DamageCauser);
-// 
-// 	if (Health <= 0)
-// 	{
-// 		SetRagDollPhysics();
-// 	}
-// 
-// }
+float AMonsterCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser)
+{
+	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	// Enemy should notice player when hit
+	if (this->IsAlive())
+	{
+		AMonsterAIController* AIController = Cast<AMonsterAIController>(GetController());
+		AUEShooterProjectile* Projectile = Cast<AUEShooterProjectile>(DamageCauser);
+		AUEShooterCharacter* PC = Cast<AUEShooterCharacter>(Projectile->GetPawnOwner());
+		AIController->SetTargetEnemy(PC);
+	}
+
+	
+
+	return ActualDamage;
+}
+
 
 UAudioComponent* AMonsterCharacter::PlayCharacterSound(USoundCue* CueToPlay)
 {
