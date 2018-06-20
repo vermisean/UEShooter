@@ -356,3 +356,18 @@ void AUEShooterCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
+ float AUEShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser)
+ {
+	 const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+ 
+	// Play camera shake
+	if (DamageShake != NULL)
+	{
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(DamageShake, 1.0f);
+	}
+ 
+	return ActualDamage;
+ }
+ 
+
+

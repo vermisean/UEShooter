@@ -6,8 +6,10 @@
 #include "AIWaypoint.h"
 #include "BaseCharacter.h"
 #include "Types.h"
+#include "UEShooterProjectile.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Classes/GameFramework/PawnMovementComponent.h"
@@ -47,6 +49,11 @@ AMonsterCharacter::AMonsterCharacter(const class FObjectInitializer& ObjectIniti
 	MeleeCooldown = 1.0f;
 
 	SenseTimeout = 2.5f;
+
+	CharacterMovementComp = GetCharacterMovement();
+
+	DefaultMaxSpeed = 225.0f;
+	SprintMaxSpeed = 450.0f;
 
 	MonsterType = EMonsterBehaviorType::Patrolling;
 }
@@ -91,6 +98,8 @@ void AMonsterCharacter::Tick(float DeltaSeconds)
 			bSensedTarget = false;
 			// Reset target
 			AIController->SetTargetEnemy(nullptr);
+			// Reset speed to walk
+			CharacterMovementComp->MaxWalkSpeed = DefaultMaxSpeed;
 		}
 	}
 }
@@ -109,9 +118,8 @@ void AMonsterCharacter::OnSeePlayer(APawn* Pawn)
 	AUEShooterCharacter* SensedPawn = Cast<AUEShooterCharacter>(Pawn);
 	if (AIController && SensedPawn->IsAlive())
 	{
-		//GetMovementComponent()->GetMaxSpeed() = 
 		AIController->SetTargetEnemy(SensedPawn);
-		//AIController->SetMoveToTarget(SensedPawn);
+		CharacterMovementComp->MaxWalkSpeed = SprintMaxSpeed;
 	}
 }
 
@@ -151,7 +159,6 @@ void AMonsterCharacter::OnRetriggerMeleeStrike()
 	for (int32 i = 0; i < Overlaps.Num(); i++)
 	{
 		ABaseCharacter* OverlappingPawn = Cast<ABaseCharacter>(Overlaps[i]);
-		// attack one player at max
 		break;
 	}
 
@@ -168,7 +175,7 @@ void AMonsterCharacter::PerformMeleeStrike(AActor* HitActor)
 		// Set timer to start attacking
 		if (!TimerHandle_MeleeAttack.IsValid())
 		{
-			// TODO Set Timer
+			GetWorldTimerManager().SetTimer(TimerHandle_MeleeAttack, this, &AMonsterCharacter::OnRetriggerMeleeStrike, MeleeCooldown, true);
 		}
 
 		return;
@@ -186,24 +193,10 @@ void AMonsterCharacter::PerformMeleeStrike(AActor* HitActor)
 
 			HitActor->TakeDamage(DmgEvent.Damage, DmgEvent, GetController(), this);
 			
-			// Play camera shake
-			if (DamageShake != NULL)
+			if (MeleeAnimMontage != NULL)
 			{
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(DamageShake, 1.0f);
+				PlayAnimMontage(MeleeAnimMontage);
 			}
-			//UGameplayStatics::PlayWorldCameraShake(GetWorld(),
-			
-			//MeleeAnimMontage->CanBeUsedInMontage(true);
-			PlayAnimMontage(MeleeAnimMontage);
-
-			//UAnimInstance* AnimInstance = FindComponentByClass<USkeletalMeshComponent>()->GetAnimInstance();
-			//if (AnimInstance != NULL)
-			//{
-			//	AnimInstance->Montage_Play(MeleeAnimMontage, 1.f);
-
-
-				// TODO Play sound
-			//}
 		}
 	}
 }
@@ -214,16 +207,29 @@ void AMonsterCharacter::PlayHit(float DamageTaken, struct FDamageEvent const& Da
 
 }
 
-// float AMonsterCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser)
-// {
-// 	//Super::TakeDamage(Damage, FDamageEvent, EventInstigator, DamageCauser);
-// 
-// 	if (Health <= 0)
-// 	{
-// 		SetRagDollPhysics();
-// 	}
-// 
-// }
+float AMonsterCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser)
+{
+	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	if (this->IsAlive())
+	{
+		// Play hit animation
+		if (DamageTakenAnimMontage != NULL)
+		{
+			PlayAnimMontage(DamageTakenAnimMontage);
+		}
+
+		// Enemy should notice player when hit
+
+		AMonsterAIController* AIController = Cast<AMonsterAIController>(GetController());
+		AUEShooterProjectile* Projectile = Cast<AUEShooterProjectile>(DamageCauser);
+		AUEShooterCharacter* PC = Cast<AUEShooterCharacter>(Projectile->GetPawnOwner());
+		AIController->SetTargetEnemy(PC);
+	}
+
+	return ActualDamage;
+}
+
 
 UAudioComponent* AMonsterCharacter::PlayCharacterSound(USoundCue* CueToPlay)
 {

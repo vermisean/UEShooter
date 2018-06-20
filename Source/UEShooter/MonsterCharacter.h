@@ -21,6 +21,8 @@ class UESHOOTER_API AMonsterCharacter : public ABaseCharacter
 
 	float LastMeleeAttackTime;
 
+	UPROPERTY(VisibleAnywhere, Category = "Movement")
+	class UCharacterMovementComponent* CharacterMovementComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	class UPawnSensingComponent* PawnSenseComp;
@@ -66,13 +68,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	class UAnimMontage* MeleeAnimMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	class UAnimMontage* DamageTakenAnimMontage;
+
 	FTimerHandle TimerHandle_MeleeAttack;
 
 	float MeleeCooldown;
 
 	virtual void PlayHit(float DamageTaken, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser, bool bKilled);
 
-	//virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
 
 	class UAudioComponent* PlayCharacterSound(class USoundCue* CueToPlay);
 
@@ -92,9 +97,7 @@ protected:
 	USoundCue* SoundAttackMelee;
 
 public:
-	// Damage Camera Shake Asset
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UCameraShake> DamageShake;
+
 
 	AMonsterCharacter(const class FObjectInitializer& ObjectInitializer);
 

@@ -39,6 +39,10 @@ class AUEShooterCharacter : public ABaseCharacter
 public:
 	AUEShooterCharacter(const class FObjectInitializer& ObjectInitializer);
 
+	// Damage Camera Shake Asset
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShake> DamageShake;
+
 	// Gun Camera Shake Asset
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UCameraShake> GunShake;
@@ -147,6 +151,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
 	float TargetingSpeedModifier;
+
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
 
 private:
 	bool BWantsToFire;
