@@ -9,6 +9,7 @@
 #include "UEShooterProjectile.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Classes/GameFramework/PawnMovementComponent.h"
@@ -48,6 +49,11 @@ AMonsterCharacter::AMonsterCharacter(const class FObjectInitializer& ObjectIniti
 	MeleeCooldown = 1.0f;
 
 	SenseTimeout = 2.5f;
+
+	CharacterMovementComp = GetCharacterMovement();
+
+	DefaultMaxSpeed = 225.0f;
+	SprintMaxSpeed = 450.0f;
 
 	MonsterType = EMonsterBehaviorType::Patrolling;
 }
@@ -92,6 +98,8 @@ void AMonsterCharacter::Tick(float DeltaSeconds)
 			bSensedTarget = false;
 			// Reset target
 			AIController->SetTargetEnemy(nullptr);
+			// Reset speed to walk
+			CharacterMovementComp->MaxWalkSpeed = DefaultMaxSpeed;
 		}
 	}
 }
@@ -110,9 +118,8 @@ void AMonsterCharacter::OnSeePlayer(APawn* Pawn)
 	AUEShooterCharacter* SensedPawn = Cast<AUEShooterCharacter>(Pawn);
 	if (AIController && SensedPawn->IsAlive())
 	{
-		//GetMovementComponent()->GetMaxSpeed() = 
 		AIController->SetTargetEnemy(SensedPawn);
-		//AIController->SetMoveToTarget(SensedPawn);
+		CharacterMovementComp->MaxWalkSpeed = SprintMaxSpeed;
 	}
 }
 

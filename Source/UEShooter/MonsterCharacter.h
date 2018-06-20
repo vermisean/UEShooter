@@ -21,6 +21,8 @@ class UESHOOTER_API AMonsterCharacter : public ABaseCharacter
 
 	float LastMeleeAttackTime;
 
+	UPROPERTY(VisibleAnywhere, Category = "Movement")
+	class UCharacterMovementComponent* CharacterMovementComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	class UPawnSensingComponent* PawnSenseComp;
