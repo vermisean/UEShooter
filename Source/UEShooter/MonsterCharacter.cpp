@@ -55,6 +55,8 @@ AMonsterCharacter::AMonsterCharacter(const class FObjectInitializer& ObjectIniti
 	DefaultMaxSpeed = 225.0f;
 	SprintMaxSpeed = 450.0f;
 
+	MovementCooldown = 2.8f;
+
 	MonsterType = EMonsterBehaviorType::Patrolling;
 }
 
@@ -84,6 +86,15 @@ void AMonsterCharacter::BeginPlay()
 	{
 		MeleeCollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AMonsterCharacter::OnMeleeCompBeginOverlap);
 	}
+
+	if (MeleeAnimMontage != NULL && DamageTakenAnimMontage != NULL)
+	{
+		MeleeAnimMontage->BlendIn.SetBlendTime(0.2f);
+		MeleeAnimMontage->BlendOut.SetBlendTime(0.6f);
+		DamageTakenAnimMontage->BlendIn.SetBlendTime(0.2f);
+		DamageTakenAnimMontage->BlendOut.SetBlendTime(0.6f);
+	}
+
 }
 
 void AMonsterCharacter::Tick(float DeltaSeconds)
@@ -191,14 +202,30 @@ void AMonsterCharacter::PerformMeleeStrike(AActor* HitActor)
 			FPointDamageEvent DmgEvent;
 			DmgEvent.Damage = MeleeDamage;
 
+			GetMovementComponent()->Deactivate();
+			GetWorldTimerManager().SetTimer(TimerHandle_ResumeMovement, this, &AMonsterCharacter::ResumeMovement, MovementCooldown, false);
+
 			HitActor->TakeDamage(DmgEvent.Damage, DmgEvent, GetController(), this);
-			
+
+			// Stop movement momentarily
+//  			if (CharacterMovementComp != NULL)
+// 			{
+//  				//CharacterMovementComp->StopMovementImmediately();
+// 				//CharacterMovementComp->Velocity.Set(0.0f, 0.0f, 0.0f);
+// 				
+//  			}
+
 			if (MeleeAnimMontage != NULL)
 			{
 				PlayAnimMontage(MeleeAnimMontage);
 			}
 		}
 	}
+}
+
+void AMonsterCharacter::ResumeMovement()
+{
+	GetCharacterMovement()->Activate();
 }
 
 void AMonsterCharacter::PlayHit(float DamageTaken, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser, bool bKilled)
@@ -213,6 +240,14 @@ float AMonsterCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dam
 
 	if (this->IsAlive())
 	{
+		// Stop movement momentarily
+		if (CharacterMovementComp != NULL)
+		{
+			//CharacterMovementComp->StopMovementImmediately();
+			//CharacterMovementComp->
+			//CharacterMovementComp->Velocity.Set(0.0f, 0.0f, 0.0f);
+		}
+
 		// Play hit animation
 		if (DamageTakenAnimMontage != NULL)
 		{

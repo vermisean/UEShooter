@@ -73,7 +73,13 @@ protected:
 
 	FTimerHandle TimerHandle_MeleeAttack;
 
+	FTimerHandle TimerHandle_ResumeMovement;
+
 	float MeleeCooldown;
+
+	float MovementCooldown;
+
+	void ResumeMovement();
 
 	virtual void PlayHit(float DamageTaken, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser, bool bKilled);
 
