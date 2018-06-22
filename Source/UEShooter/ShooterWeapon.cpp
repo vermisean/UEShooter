@@ -251,10 +251,10 @@ void AShooterWeapon::HandleFiring()
 		}
 	}
 
-// 	if (MyPawn)
-// 	{
-// 		MyPawn->MakePawnNoise(1.0f);
-// 	}
+ 	if (MyPawn)
+ 	{
+ 		MyPawn->MakeNoise(1.0f);
+ 	}
 
 	LastFireTime = GetWorld()->GetTimeSeconds();
 }
