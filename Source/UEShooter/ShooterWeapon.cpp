@@ -17,7 +17,7 @@
 AShooterWeapon::AShooterWeapon(const class FObjectInitializer& PCIP)
 	: Super(PCIP)
 {
-	Mesh = PCIP.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("WeaponMesh3P"));
+	Mesh = PCIP.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("WeaponMesh"));
 	Mesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
 	Mesh->bReceivesDecals = true;
 	Mesh->CastShadow = true;
@@ -251,10 +251,10 @@ void AShooterWeapon::HandleFiring()
 		}
 	}
 
-// 	if (MyPawn)
-// 	{
-// 		MyPawn->MakePawnNoise(1.0f);
-// 	}
+ 	if (MyPawn)
+ 	{
+ 		MyPawn->MakeNoise(1.0f);
+ 	}
 
 	LastFireTime = GetWorld()->GetTimeSeconds();
 }

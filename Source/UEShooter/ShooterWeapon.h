@@ -32,13 +32,14 @@ protected:
 
 	AShooterWeapon(const FObjectInitializer& ObjectInitializer);
 
+public:
+
 	UPROPERTY(EditDefaultsOnly)
 	class AUEShooterCharacter* MyPawn;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 	class USkeletalMeshComponent* Mesh;
 
-public:
 	UFUNCTION(BlueprintCallable, Category = "Game|Weapon")
 	USkeletalMeshComponent* GetWeaponMesh() const;
 
@@ -74,7 +75,7 @@ protected:
 
 	FHitResult WeaponTrace(const FVector& TraceFrom, const FVector& TraceTo) const;
 
-	virtual void FireWeapon() PURE_VIRTUAL(ASWeapon::FireWeapon, );
+	virtual void FireWeapon() PURE_VIRTUAL(AShooterWeapon::FireWeapon, );
 
 private:
 

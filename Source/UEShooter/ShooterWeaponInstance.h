@@ -60,7 +60,7 @@ protected:
 	void ProcessInstantHitConfirmed(const FHitResult& Impact, const FVector& Origin, const FVector& ShootDir);
 
 	UFUNCTION()
-	void NotifyHit(const FHitResult Impact, FVector_NetQuantizeNormal ShootDir);
+	void SayNotifyHit(const FHitResult Impact, FVector_NetQuantizeNormal ShootDir);
 
 	UPROPERTY()
 	FVector HitImpactNotify;
@@ -81,5 +81,5 @@ protected:
 
 	// Hit verification: scale for bounding box of hit actor 
 	UPROPERTY(EditDefaultsOnly)
-	float ClientSideHitLeeway;
+	float HitLeeway;
 };

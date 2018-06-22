@@ -13,11 +13,11 @@
 AShooterWeaponInstance::AShooterWeaponInstance(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
-	HitDamage = 26;
+	HitDamage = 14;
 	WeaponRange = 15000;
 
 	AllowedViewDotHitDir = -1.0f;
-	ClientSideHitLeeway = 200.0f;
+	HitLeeway = 200.0f;
 	MinimumProjectileSpawnDistance = 800;
 	TracerRoundInterval = 3;
 }
@@ -141,19 +141,12 @@ void AShooterWeaponInstance::ProcessInstantHit(const FHitResult& Impact, const F
 		if (Impact.GetActor())
 		{
 			// Notify the server of our local hit to validate and apply actual hit damage.
-			NotifyHit(Impact, ShootDir);
+			SayNotifyHit(Impact, ShootDir);
 		}
-//		else if (Impact.GetActor() == nullptr)
-//		{
-// 			if (Impact.bBlockingHit)
-// 			{
-// 				ServerNotifyHit(Impact, ShootDir);
-// 			}
-// 			else
-// 			{
-// 				ServerNotifyMiss(ShootDir);
-// 			}
-//		}
+		else if (Impact.GetActor() == nullptr)
+		{
+			return;
+		}
 	}
 
 	// Process a confirmed hit.
@@ -173,7 +166,7 @@ void AShooterWeaponInstance::ProcessInstantHitConfirmed(const FHitResult& Impact
 	SimulateInstantHit(Impact.ImpactPoint);
 }
 
-void AShooterWeaponInstance::NotifyHit(const FHitResult Impact, FVector_NetQuantizeNormal ShootDir)
+void AShooterWeaponInstance::SayNotifyHit(const FHitResult Impact, FVector_NetQuantizeNormal ShootDir)
 {
 	if (Instigator && (Impact.GetActor() || Impact.bBlockingHit))
 	{
@@ -203,7 +196,7 @@ void AShooterWeaponInstance::NotifyHit(const FHitResult Impact, FVector_NetQuant
 				const FBox HitBox = Impact.GetActor()->GetComponentsBoundingBox();
 
 				FVector BoxExtent = 0.5 * (HitBox.Max - HitBox.Min);
-				BoxExtent *= ClientSideHitLeeway;
+				BoxExtent *= HitLeeway;
 
 				BoxExtent.X = FMath::Max(20.0f, BoxExtent.X);
 				BoxExtent.Y = FMath::Max(20.0f, BoxExtent.Y);
