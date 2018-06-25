@@ -8,15 +8,14 @@
 #include "Components/InputComponent.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime/Engine/Classes/GameFramework/PawnMovementComponent.h"
-#include "ShooterWeapon.h"
-#include "ShooterWeaponInstance.h"
+#include "BaseGun.h"
+#include "GunInstance.h"
 #include "GameFramework/InputSettings.h"
 #include "Kismet/GameplayStatics.h"
 
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
-//////////////////////////////////////////////////////////////////////////
 // AUEShooterCharacter
 
 void AUEShooterCharacter::Tick(float DeltaSeconds)
@@ -59,23 +58,20 @@ AUEShooterCharacter::AUEShooterCharacter(const class FObjectInitializer& ObjectI
 
 
 	// Create a gun mesh component
- 	FP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
- 	FP_Gun->SetOnlyOwnerSee(true);			// only the owning player will see this mesh
- 	FP_Gun->bCastDynamicShadow = false;
- 	FP_Gun->CastShadow = false;
- 	//FP_Gun->SetupAttachment(Mesh1P, TEXT("WeaponSocket"));
- 	FP_Gun->SetupAttachment(RootComponent);
- 
- 	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
- 	FP_MuzzleLocation->SetupAttachment(FP_Gun);
- 	FP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
+  	FP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
+  	FP_Gun->SetOnlyOwnerSee(true);			// only the owning player will see this mesh
+  	FP_Gun->bCastDynamicShadow = false;
+  	FP_Gun->CastShadow = false;
+  	//FP_Gun->SetupAttachment(Mesh1P, TEXT("WeaponSocket"));
+  	FP_Gun->SetupAttachment(RootComponent);
+  
+  	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
+  	FP_MuzzleLocation->SetupAttachment(FP_Gun);
+  	FP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
 
-// 	// Gun class to create
-   //	Gun = CreateDefaultSubobject<AShooterWeaponInstance>(TEXT("Gun"));
-	//Gun->Mesh = FP_Gun;
-	//Gun->SetOwningPawn(this);
-	
-	//Gun->muz
+ 	// Gun class to create
+	//GunClass = CreateDefaultSubobject<AGunInstance>(TEXT("Gun Instance"));
+	//GunClass.
 
 	FireParticles = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("FlashLocation"));
 	FireParticles->AttachToComponent(FP_MuzzleLocation, FAttachmentTransformRules::KeepRelativeTransform);
