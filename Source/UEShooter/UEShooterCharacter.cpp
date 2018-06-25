@@ -70,8 +70,8 @@ AUEShooterCharacter::AUEShooterCharacter(const class FObjectInitializer& ObjectI
   	FP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
 
  	// Gun class to create
-	//GunClass = CreateDefaultSubobject<AGunInstance>(TEXT("Gun Instance"));
-	//GunClass.
+// 	GunClass = CreateDefaultSubobject<AGunInstance>(TEXT("Gun"));
+// 	GunClass->SetOwningPawn(this)
 
 	FireParticles = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("FlashLocation"));
 	FireParticles->AttachToComponent(FP_MuzzleLocation, FAttachmentTransformRules::KeepRelativeTransform);

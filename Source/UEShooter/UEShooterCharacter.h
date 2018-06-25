@@ -64,8 +64,8 @@ public:
 	FVector GunOffset;
 
 	// Gun class
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	TSubclassOf<class AGunInstance> GunClass;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	//class AGunInstance* GunClass;
 
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
